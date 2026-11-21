@@ -37,6 +37,7 @@
  .field label{font-size:12px}
  .metric strong{font-size:19px}
 }
+.powered-by{text-align:center;font-size:12px;color:var(--muted);padding:8px 15px 24px}
 </style>
 </head>
 <body>
@@ -156,7 +157,7 @@ if(r.marks.length<=17){if(view==='each')r.marks.slice(0,-1).forEach((v,i)=>{cons
 if(r.segments.length<=13)r.segments.forEach((s,i)=>shape('text',{x:xp((r.cumulative[i]+r.cumulative[i+1])/2),y:mid+4,'font-size':10,'font-weight':700,'text-anchor':'middle',fill:s.kind==='cut'?'#b91c1c':s.kind==='edge'?'#15803d':'#1d4ed8'},svg,i+1));
 // B형: 초록색 좌우 촉의 실제 가로 길이는 각 영역 바로 아래에 초록색으로 표시한다.
 if(mode==='B'&&r.ends){[r.edge/2,r.m-r.edge/2].forEach(x=>shape('text',{x:xp(x),y:Y+H+15,fill:'#16a34a','font-size':11,'font-weight':700,'text-anchor':'middle'},svg,fmt(r.edge)));}
-if(borders.length>2)shape('text',{x:Math.min(406,borders[2].x+9),y:mid-12,fill:'#9333ea','font-size':11,'font-weight':700},svg,`${fmt(r.angle)}°`);
+if(borders.length>2)shape('text',{x:Math.min(406,borders[2].x+9),y:mid-12,fill:'#93333ea','font-size':11,'font-weight':700},svg,`${fmt(r.angle)}°`);
 shape('line',{x1:X-12,y1:Y,x2:X-12,y2:Y+H,stroke:'#ea580c'});
 shape('text',{x:X-17,y:mid+4,fill:'#ea580c','font-size':10,'text-anchor':'end'},svg,fmt(r.h));
 shape('line',{x1:X,y1:Y+H+(mode==='B'?32:20),x2:X+W,y2:Y+H+(mode==='B'?32:20),stroke:'#ea580c'});
@@ -191,5 +192,6 @@ $('reset').addEventListener('click',()=>{for(const [id,v] of Object.entries(defa
 render();
 })();
 </script>
+<div class="powered-by">powered by 김태중<br>© 2026 김태중. All rights reserved. 무단 복제 및 배포를 금지합니다.</div>
 </body>
 </html>
