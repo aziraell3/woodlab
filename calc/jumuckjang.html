@@ -15,31 +15,32 @@
 <div class="kicker">계산된 값</div><div id="result" aria-live="polite"></div>
 <div class="drawing-title"><strong>주먹장 작도 미리보기</strong><span id="drawing-status" class="muted">A형 · 기본 방향</span></div>
 <div class="toggles"><button type="button" data-view="each" aria-pressed="true">각 구간 표시</button><button type="button" data-view="cumulative" aria-pressed="false">누적 치수 표시</button></div>
-<div class="figure"><svg id="drawing" viewBox="0 0 420 360" role="img" aria-label="주먹장 대각선 길이, 분할점, 제거 영역 작도"></svg><div class="legend"><span><i class="swatch" style="background:#ea580c"></i>부재</span><span><i class="swatch" style="background:#2563eb"></i>대각선</span><span><i class="swatch" style="background:#9333ea"></i>기울기</span><span><i class="swatch" style="background:#16a34a"></i>좌우 촉</span><span><i class="swatch" style="background:#dc2626"></i>제거</span></div></div>
-<div class="footer"><button type="button" class="reset" id="reset">전체 초기화</button></div>
+<div class="drawing-actions"><button type="button" id="diagonal-toggle" aria-pressed="false">대각선 숨기기</button><button type="button" id="center-toggle" aria-pressed="false">중심선 숨기기</button><button type="button" id="joint-toggle" aria-pressed="false">주먹장 숨기기</button><button type="button" id="slope-toggle" aria-pressed="false">경사각 숨기기</button></div>
+<div class="figure"><button type="button" class="figure-fullscreen-toggle" id="figure-fullscreen-toggle" aria-label="작도 전체보기" aria-pressed="false">⛶</button><svg id="drawing" viewBox="0 0 420 360" role="img" aria-label="주먹장 대각선 길이, 분할점, 제거 영역 작도"></svg><div class="legend"><span><i class="swatch" style="background:#ea580c"></i>부재</span><span><i class="swatch" style="background:#2563eb"></i>대각선</span><span><i class="swatch" style="background:#9333ea"></i>경사각</span><span><i class="swatch" style="background:#16a34a"></i>좌우 주먹장</span><span><i class="swatch" style="background:#dc2626"></i>제거</span></div></div>
+<div class="footer hidden"><button type="button" class="reset" id="reset">전체 초기화</button></div>
 </section>
 <div class="workspace-inputs">
 <section class="panel" aria-label="공통 입력값">
 <div class="kicker">공통 입력값</div>
 <div class="options">
-<div class="field orange"><label for="width">부재의 가로 (mm)</label><input id="width" type="number" value="132" step="any"></div>
-<div class="field orange"><label for="thick">부재의 두께 (mm)</label><input id="thick" type="number" value="20" step="any"></div>
-<div class="slope-row"><div class="field purple"><label for="angle">기울기 (°)</label><input id="angle" type="number" value="7" step="any"></div><label class="check slope-check"><input type="checkbox" id="reverse">방향반전</label><label class="check slope-check" id="edge-slope-wrap"><input type="checkbox" id="edge-slope">좌/우 기울기 적용</label></div>
+<div class="field orange"><label for="width">부재의 가로 (mm)</label><input id="width" type="number" value="132" min="0.001" step="any"></div>
+<div class="field orange"><label for="thick">주먹장의 길이 (mm)</label><input id="thick" type="number" value="20" min="0.001" step="any"></div>
+<div class="slope-row"><div class="field purple"><label for="angle">경사각 (°)</label><input id="angle" type="number" value="7" min="0" step="any"></div><label class="check slope-check"><input type="checkbox" id="reverse">방향반전</label></div>
 </div>
 </section>
 <section class="panel" aria-label="유형별 입력값">
 <div class="tabs" role="tablist" aria-label="유형 선택"><button type="button" role="tab" data-mode="A" aria-selected="true">A형</button><button type="button" role="tab" data-mode="B" aria-selected="false">B형</button><button type="button" role="tab" data-mode="C" aria-selected="false">C형</button></div>
 <div class="subtitle" id="type-title">A형 · 균등 분할</div>
 <div id="a-panel" class="options" role="tabpanel">
-<div class="grid2"><div class="field blue"><label for="ac">촉의 개수 (개)</label><input type="number" id="ac" value="5" min="1" max="20" step="1"></div><div class="field blue"><label for="aw">촉의 가로 길이 (mm)</label><input type="number" id="aw" value="20" step="any"></div></div>
-<label class="check"><input type="checkbox" id="a-ends">좌우 촉 길이 별도 지정</label><div class="field green hidden" id="a-edge-wrap"><label for="a-edge">좌우 촉 각각의 길이 (mm)</label><input type="number" id="a-edge" value="10" step="any"></div>
+<div class="grid2"><div class="field blue"><label for="ac">주먹장의 개수 (개)</label><input type="number" id="ac" value="5" min="1" max="20" step="1"></div><div class="field blue"><label for="aw">주먹장의 가로 길이 (mm)</label><input type="number" id="aw" value="20" min="0.001" step="any" disabled></div></div>
+<label class="check hidden"><input type="checkbox" id="a-ends" disabled>좌우 주먹장 길이 별도 지정</label><div class="field green hidden" id="a-edge-wrap"><label for="a-edge">좌우 주먹장 각각의 길이 (mm)</label><input type="number" id="a-edge" value="10" min="0.001" step="any" disabled></div>
 </div>
 <div id="b-panel" class="options hidden" role="tabpanel">
-<div class="grid2"><div class="field blue"><label for="bc">촉의 개수 (개)</label><input type="number" id="bc" value="5" min="1" max="20" step="1"></div><div class="field blue"><label for="bt">촉의 길이 (mm)</label><input type="number" id="bt" value="15" step="any"></div></div>
-<div class="field green"><label for="b-edge">좌우 촉 길이 (mm)</label><input type="number" id="b-edge" value="10" step="any"></div>
+<div class="grid2"><div class="field blue"><label for="bc">주먹장의 개수 (개)</label><input type="number" id="bc" value="5" min="1" max="20" step="1"></div><div class="field blue"><label for="bt">주먹장의 길이 (mm)</label><input type="number" id="bt" value="15" min="0.001" step="any" disabled></div></div>
+<div class="edge-slope-row"><div class="field green"><label for="b-edge">좌우 주먹장 길이 (mm)</label><input type="number" id="b-edge" value="10" min="0.001" step="any"></div><label class="check slope-check" id="edge-slope-wrap"><input type="checkbox" id="edge-slope" checked>좌/우 경사각 적용</label></div>
 </div>
 <div id="c-panel" class="options hidden" role="tabpanel">
-<div class="grid2"><div class="field blue"><label for="cc">촉의 개수 (개)</label><input type="number" id="cc" value="3" min="2" max="20" step="1"></div><div class="field blue"><label for="ct">촉의 가로 길이 (mm)</label><input type="number" id="ct" value="15" step="any"></div></div>
+<div class="grid2"><div class="field blue"><label for="cc">주먹장의 개수 (개)</label><input type="number" id="cc" value="3" min="2" max="20" step="1"></div><div class="field blue"><label for="ct">주먹장의 가로 길이 (mm)</label><input type="number" id="ct" value="15" min="0.001" step="any"></div></div>
 </div>
 
 </section>
