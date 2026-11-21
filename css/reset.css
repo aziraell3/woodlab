@@ -1,0 +1,27 @@
+:root{
+  color-scheme:light;
+  --orange:#ea580c;
+  --blue:#2563eb;
+  --green:#16a34a;
+  --red:#dc2626;
+  --purple:#9333ea;
+  --surface:#f5f6f8;
+  --line:#d9dce2;
+  --text:#22242a;
+  --muted:#656b75;
+}
+
+*{box-sizing:border-box}
+
+body{
+  margin:0;
+  background:#f1f2f4;
+  font-family:system-ui,-apple-system,'Apple SD Gothic Neo','Malgun Gothic',sans-serif;
+  color:var(--text);
+  line-height:1.5;
+}
+
+button,
+input{
+  font:inherit;
+}
