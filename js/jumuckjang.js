@@ -17,6 +17,10 @@ function setEduChecked(on){eduSyncing=true;$('edu-mode').checked=!!on;eduSyncing
 function syncEduFromToggles(){const checked=!drawingTogglesAllOn();if($('edu-mode').checked===checked)return;setEduChecked(checked);writeEduPref(checked);}
 function applyEduMode(checked){const on=!!checked;setEduChecked(on);setDrawingToggles(!on);writeEduPref(on);}
 (function initEduMode(){applyEduMode(readEduPref());})();
+const widthStorageKey='woodlab.jumuckjang.app-width',widthOptions=[800,1024,1200];
+function readAppWidth(){try{const n=Number(localStorage.getItem(widthStorageKey));if(widthOptions.includes(n))return n;}catch{/* ignore */}return 800;}
+function applyAppWidth(n){const width=widthOptions.includes(n)?n:800;document.documentElement.style.setProperty('--app-max-width',`${width}px`);document.querySelectorAll('[data-app-width]').forEach(btn=>btn.setAttribute('aria-pressed',String(Number(btn.dataset.appWidth)===width)));try{localStorage.setItem(widthStorageKey,String(width));}catch{/* ignore */}}
+(function initAppWidth(){applyAppWidth(readAppWidth());document.querySelectorAll('[data-app-width]').forEach(btn=>btn.addEventListener('click',()=>applyAppWidth(Number(btn.dataset.appWidth))));})();
 function inputMin(el){const min=Number(el.min);return Number.isFinite(min)?min:1;}
 function isCountField(el){return el.id==='ac'||el.id==='bc'||el.id==='cc';}
 function sanitizeNumber(el){const decimal=el.step==='any';let value=el.value.replace(decimal?/[^0-9.]/g:/\D/g,'');if(decimal){const parts=value.split('.');value=parts.shift()+(parts.length?'.'+parts.join(''):'');}if(el.value!==value)el.value=value;}

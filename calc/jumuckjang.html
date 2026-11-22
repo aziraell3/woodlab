@@ -8,12 +8,19 @@
 <link rel="icon" href="../assets/favicon.png" type="image/png" sizes="512x512">
 <link rel="apple-touch-icon" href="../assets/favicon.png">
 <link rel="stylesheet" href="../css/reset.css">
-<link rel="stylesheet" href="../css/jumuckjang.css?v=max-800-1">
+<link rel="stylesheet" href="../css/jumuckjang.css?v=width-toggle-3">
 </head>
 <body>
 <main class="app">
 <div class="app-title-row">
+<div class="app-title-main">
 <h1>주먹장 계산기</h1>
+<div class="width-toggles" role="group" aria-label="화면 가로 크기">
+<button type="button" data-app-width="800" aria-pressed="true">800</button>
+<button type="button" data-app-width="1024" aria-pressed="false">1024</button>
+<button type="button" data-app-width="1200" aria-pressed="false">1200</button>
+</div>
+</div>
 <label class="check edu-check"><input type="checkbox" id="edu-mode">교육용</label>
 </div>
 <p class="app-intro">본 계산기는 주먹장 설계 이해를 돕기 위한 화면입니다. 결과에만 의존하지 말고, 익숙해질 때까지 반복·실습하시길 권장합니다.</p>
@@ -61,6 +68,6 @@
   <div>© 2026 김태중. All rights reserved. 무단 복제 및 배포를 금지합니다.</div>
 </footer>
 </main>
-<script src="../js/jumuckjang.js?v=len-align-x-1"></script>
+<script src="../js/jumuckjang.js?v=width-toggle-1"></script>
 </body>
 </html>
