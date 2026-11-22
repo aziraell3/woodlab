@@ -1,7 +1,7 @@
 # 주먹장 계산기 — 현재 로직 명세 (에이전트 재구현용)
 
 이 문서는 **현재 구현된 동작의 단일 기준**이다. 다른 프로젝트에서 에이전트로 동일 기능을 만들 때 이 파일만으로 계산·작도·UX가 재현되어야 한다.  
-참고 구현: `calc/jumuckjang.html`, `css/jumuckjang.css`, `js/jumuckjang.js`.
+참고 구현: `calc/dovetail.html`, `css/dovetail.css`, `js/dovetail.js`.
 
 ---
 
@@ -339,7 +339,7 @@ if ends: push {w:edge, kind:'edge'}
 ## 6. 교육용 모드
 
 - 위치: **공통 입력값 킥커 우측**
-- localStorage 키: `woodlab.jumuckjang.edu-mode.v5` (`1`/`0`)
+- localStorage 키: `woodlab.dovetail.edu-mode.v5` (`1`/`0`)
 - **체크 UI 극성 (반전 의미)**:
   - **체크 해제** = 작도 토글 전부 ON (모두 보임) → “일반/전체 표시”
   - **체크** = 작도 토글 전부 OFF (모두 숨김)
@@ -353,7 +353,7 @@ if ends: push {w:edge, kind:'edge'}
 
 - CSS 변수 `--app-max-width`
 - 옵션: 800, 1024, 1200 (기본 800)
-- localStorage: `woodlab.jumuckjang.app-width`
+- localStorage: `woodlab.dovetail.app-width`
 - **모바일(<768px)에서는 width 토글 숨김**
 
 ---
@@ -436,7 +436,7 @@ if ends: push {w:edge, kind:'edge'}
 
 | 파일 | 역할 |
 |---|---|
-| `calc/jumuckjang.html` | 마크업·기본값 |
-| `css/jumuckjang.css` | 레이아웃·토글·모바일 |
-| `js/jumuckjang.js` | 계산·작도·상태 |
-| `calc/jumuckjang-logic.md` | **본 명세 (재구현 SSOT)** |
+| `calc/dovetail.html` | 마크업·기본값 |
+| `css/dovetail.css` | 레이아웃·토글·모바일 |
+| `js/dovetail.js` | 계산·작도·상태 |
+| `calc/dovetail-logic.md` | **본 명세 (재구현 SSOT)** |

@@ -4,7 +4,7 @@ const $=id=>document.getElementById(id),val=id=>Number($(id).value),checked=id=>
 const fmt=v=>Number.isFinite(v)?Number(v.toFixed(3)).toLocaleString('ko-KR'):'—';
 const svgNS='http://www.w3.org/2000/svg';
 let mode='A',view='each',previewDismissed=false,showDiagonal=true,showHeight=true,showCenter=true,showJoint=true,showSlope=true,figureFullscreen=false;
-const eduStorageKey='woodlab.jumuckjang.edu-mode.v5';
+const eduStorageKey='woodlab.dovetail.edu-mode.v5';
 let eduSyncing=false;
 const defaults=Object.fromEntries(Array.from(document.querySelectorAll('input')).map(el=>[el.id,el.type==='checkbox'?el.checked:el.value]));
 let openInputMenu=()=>{};
@@ -17,7 +17,7 @@ function setEduChecked(on){eduSyncing=true;$('edu-mode').checked=!!on;eduSyncing
 function syncEduFromToggles(){const checked=!drawingTogglesAllOn();if($('edu-mode').checked===checked)return;setEduChecked(checked);writeEduPref(checked);}
 function applyEduMode(checked){const on=!!checked;setEduChecked(on);setDrawingToggles(!on);writeEduPref(on);}
 (function initEduMode(){applyEduMode(readEduPref());})();
-const widthStorageKey='woodlab.jumuckjang.app-width',widthOptions=[800,1024,1200];
+const widthStorageKey='woodlab.dovetail.app-width',widthOptions=[800,1024,1200];
 function readAppWidth(){try{const n=Number(localStorage.getItem(widthStorageKey));if(widthOptions.includes(n))return n;}catch{/* ignore */}return 800;}
 function applyAppWidth(n){const width=widthOptions.includes(n)?n:800;document.documentElement.style.setProperty('--app-max-width',`${width}px`);document.querySelectorAll('[data-app-width]').forEach(btn=>btn.setAttribute('aria-pressed',String(Number(btn.dataset.appWidth)===width)));try{localStorage.setItem(widthStorageKey,String(width));}catch{/* ignore */}}
 (function initAppWidth(){applyAppWidth(readAppWidth());document.querySelectorAll('[data-app-width]').forEach(btn=>btn.addEventListener('click',()=>applyAppWidth(Number(btn.dataset.appWidth))));})();
