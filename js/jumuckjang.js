@@ -94,7 +94,7 @@ const endsSelected=mode==='B'||mode==='A'&&checked('a-ends');
 const edge=endsSelected?val(mode==='A'?'a-edge':'b-edge'):0;
 // Every numeric field except angle must stay positive; unchecked optional edge fields are ignored.
 const ends=endsSelected&&edge>0;
-if([m,h,angle,n,edge].some(v=>!Number.isFinite(v))||m<=0||h<=0||angle<0||angle>=80||!Number.isInteger(n)||n%2===0||n<1||n>19||(mode!=='A'&&n<3)||edge<0||(mode==='B'&&edge<=0)||edge*2>=m)return {error:'부재 치수, 주먹장 개수(홀수) 및 좌/우 주먹장 길이를 확인해 주세요.'};
+if([m,h,angle,n,edge].some(v=>!Number.isFinite(v))||m<=0||h<=0||angle<0||angle>=80||!Number.isInteger(n)||n%2===0||n<3||n>19||edge<0||(mode==='B'&&edge<=0)||edge*2>=m)return {error:'부재 치수, 주먹장 개수(홀수) 및 좌/우 주먹장 길이를 확인해 주세요.'};
 let step=0,total=0,tooth=0,gap=0,diagonalRequired=true,diagonalCount=n;
 if(mode==='A'){
 const aw=val('aw');if(!(aw>0))return {error:'주먹장의 길이는 0보다 커야 합니다.'};

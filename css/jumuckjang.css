@@ -18,15 +18,14 @@ h1{font-size:23px;margin:0;padding:0;min-width:0}
  .app{max-width:1360px;margin:24px auto;padding:0 22px 26px}
  .workspace{display:grid;grid-template-columns:minmax(0,65fr) minmax(260px,35fr);gap:18px;align-items:start}
  .workspace.inputs-collapsed{grid-template-columns:minmax(0,1fr) auto}
- .workspace-inputs{min-width:0;display:flex;flex-direction:column;gap:10px;position:sticky;top:16px;max-height:calc(100vh - 32px)}
+ .workspace-inputs{min-width:0;display:flex;flex-direction:column;gap:10px;position:sticky;top:52px;z-index:25;align-self:start}
  .workspace-inputs>.mobile-input-group-toggle{display:flex;align-items:center;justify-content:space-between;width:100%;border:1px solid var(--line);background:white;border-radius:11px;padding:11px 13px;color:var(--text);font:inherit;font-weight:700;cursor:pointer;flex:0 0 auto}
  .workspace-inputs>.mobile-input-group-toggle::after{content:'접기';font-size:12px;color:var(--muted);font-weight:600}
  .workspace-inputs>.mobile-input-group-toggle[aria-expanded=false]::after{content:'펼치기'}
- .workspace.inputs-collapsed .workspace-inputs{max-height:none}
  .workspace.inputs-collapsed .workspace-inputs>.mobile-input-group-toggle{width:auto;min-width:108px}
  .workspace-inputs[data-collapsed=true]>.mobile-input-group-body{display:none}
- .workspace-inputs>.mobile-input-group-body{min-height:0;overflow:auto;scrollbar-gutter:stable}
- .workspace-preview{position:sticky;top:16px;min-width:0;max-height:calc(100vh - 32px);overflow:auto;scrollbar-gutter:stable;padding-bottom:16px}
+ .workspace-inputs>.mobile-input-group-body{min-width:0}
+ .workspace-preview{min-width:0;padding-bottom:16px;overflow:visible}
  .workspace-preview .figure{padding-bottom:14px}
  /* 좌측은 작도부터 표시하고, 계산값은 그 아래 배치 */
  .workspace-preview{display:flex;flex-direction:column}
@@ -66,7 +65,7 @@ h1{font-size:23px;margin:0;padding:0;min-width:0}
  .mobile-input-backdrop{position:fixed;inset:0;z-index:35;background:rgba(0,0,0,.3)}
  .mobile-input-backdrop:not([hidden]){display:block}
  .workspace{display:flex;flex-direction:column}
- .workspace-inputs{order:-1;position:sticky;top:51px;z-index:20;background:#f1f2f4;padding:8px 0 6px;margin-bottom:10px}
+ .workspace-inputs{order:-1;position:sticky;top:44px;z-index:20;background:#f1f2f4;padding:8px 0 6px;margin-bottom:10px}
  .workspace-inputs[data-collapsed=false]{position:fixed;top:0;left:0;right:0;z-index:40;width:100%;margin:0;padding:0 8px 12px;max-height:88vh;overflow:auto;border-radius:0 0 18px 18px;box-shadow:0 10px 28px #0003}
  .workspace-preview>.footer{margin-top:20px}
  .workspace-inputs .panel{padding:10px;margin-bottom:8px}
