@@ -173,17 +173,29 @@ compareWidth = centerWidth
 t = ct
 조건: n≥3, t>0, n*t < m
 horizontalGap g = (m - n*t) / (n-1)
-x = round(t*1000), y = round(g*1000)
-d = gcd(x,y); u=x/d; v=y/d
-base = n*u + (n-1)*v
-multiplier = max(1, floor(m/base)+1)
-tooth = u*multiplier
-gap = v*multiplier
-total = base*multiplier
+
+if whole(t) && whole(g):
+  tooth = t
+  gap = g
+  total = m
+  diagonalRequired = false   // 가로 주먹장·간격이 이미 정수 → 대각선 불필요
+else:
+  x = round(t*1000), y = round(g*1000)
+  d = gcd(x,y); u=x/d; v=y/d
+  base = n*u + (n-1)*v
+  multiplier = max(1, floor(m/base)+1)
+  tooth = u*multiplier
+  gap = v*multiplier
+  total = base*multiplier
+  diagonalRequired = true
+
 diagonalCount = n   // marks는 아래 방식
-diagonalRequired = true
-compareWidth = m  → total > m
+compareWidth = m
+→ diagonalRequired이면 total > m, 아니면 total ≥ m
 ```
+
+예: `m=100`, `t=20`, `n=3` → `g=20` (정수) → 대각선 불필요.  
+예: `m=132`, `t=15`, `n=3` → `g=43.5` → 대각선 비율 환산 필요.
 
 ### 3.5 가로 세그먼트 (`segments`)
 
@@ -222,7 +234,9 @@ if ends: push {w:edge, kind:'edge'}
   - `대각선 총길이` = `total`
   - A/B: `대각선 균등 분할` = `step`
   - C: `대각선 주먹장 길이` = `tooth`
-- 불필요 시: `가로 균등 분할` = `step` 만 표시
+- 불필요 시:
+  - A/B: `가로 균등 분할` = `step`
+  - C: `가로 주먹장 길이` = `tooth`, `가로 간격` = `gap`
 - A형 + ends 선택 시 상세: 좌/우 주먹장 가로 길이
 
 표시 포맷: 소수 3자리까지 반올림 후 `ko-KR` locale.
@@ -409,7 +423,7 @@ if ends: push {w:edge, kind:'edge'}
 2. A: `aw=m/n` 자동·disabled. ends UI 없어도 계산은 ends=false
 3. B: `bt=(m-2e)/(n-2)` 자동. 대각선 `diagonalCount=n-2`, 중앙만 사선
 4. B 예제 132/10/5 → step 41, total 123, 세그먼트 edge+3중앙+edge
-5. C: keep/cut 교차, 정수 비율 대각선, `n*t<m`
+5. C: keep/cut 교차, `n*t<m`. `t`·`g`가 모두 정수면 대각선 불필요(가로 주먹장/간격 표시), 아니면 정수 비율 대각선
 6. 교육용 체크가 공통 입력 킥커 우측. 체크=전부 숨김, 해제=전부 보임 + 기억
 7. joint/center ON 시 height ON. height OFF가 joint를 끄지 않음
 8. B형 수직 가이드: 첫·마지막 포함. 누적 모드에서 마지막 누적값 표시

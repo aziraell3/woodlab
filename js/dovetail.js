@@ -114,9 +114,14 @@ if(whole(centerWidth/diagonalCount)){step=centerWidth/diagonalCount;diagonalRequ
 total=diagonalCount*step;
 }else{
 const t=val('ct');if(n<3||!(t>0)||n*t>=m)return {error:'C형은 주먹장 길이 × 주먹장 개수가 부재 가로보다 작아야 합니다.'};
-const horizontalGap=(m-n*t)/(n-1),x=Math.round(t*1000),y=Math.round(horizontalGap*1000),d=gcd(x,y),u=x/d,v=y/d,base=n*u+(n-1)*v;
+const horizontalGap=(m-n*t)/(n-1);
+// 주먹장·간격이 모두 정수면 가로만으로 표시 가능 → 대각선 불필요
+if(whole(t)&&whole(horizontalGap)){tooth=t;gap=horizontalGap;total=m;diagonalRequired=false;}
+else{
+const x=Math.round(t*1000),y=Math.round(horizontalGap*1000),d=gcd(x,y),u=x/d,v=y/d,base=n*u+(n-1)*v;
 if(base<=0||base>10000000)return {error:'정수 분할 범위를 초과했습니다.'};
 const multiplier=Math.max(1,Math.floor(m/base)+1);tooth=u*multiplier;gap=v*multiplier;total=base*multiplier;
+}
 }
 const compareWidth=mode==='B'?m-2*edge:m;
 if(!((diagonalRequired?total>compareWidth:total>=compareWidth)&&total<10000000))return {error:'대각선 길이 조건을 확인해 주세요.'};
@@ -207,7 +212,7 @@ document.querySelector('.show-preview')?.toggleAttribute('hidden',!previewDismis
 if(previewDismissed)return;
 const r=compute();if(r.error){$('result').innerHTML=`<div class="error">${r.error}</div>`;$('drawing').replaceChildren();return;}
 diagonalToggle.disabled=!r.diagonalRequired;diagonalToggle.setAttribute('aria-pressed',String(!!(showDiagonal&&r.diagonalRequired)));diagonalToggle.textContent=r.diagonalRequired?(showDiagonal?'대각선 보임':'대각선 숨김'):'대각선 불필요';
-let html=r.diagonalRequired?`<div class="metrics"><div class="metric"><small>대각선 총길이</small><strong>${fmt(r.total)} mm</strong></div><div class="metric"><small>${mode==='C'?'대각선 주먹장 길이':'대각선 균등 분할'}</small><strong>${fmt(mode==='C'?r.tooth:r.step)} mm</strong></div></div>`:`<div class="metrics"><div class="metric"><small>가로 균등 분할</small><strong>${fmt(r.step)} mm</strong></div></div>`;
+let html=r.diagonalRequired?`<div class="metrics"><div class="metric"><small>대각선 총길이</small><strong>${fmt(r.total)} mm</strong></div><div class="metric"><small>${mode==='C'?'대각선 주먹장 길이':'대각선 균등 분할'}</small><strong>${fmt(mode==='C'?r.tooth:r.step)} mm</strong></div></div>`:mode==='C'?`<div class="metrics"><div class="metric"><small>가로 주먹장 길이</small><strong>${fmt(r.tooth)} mm</strong></div><div class="metric"><small>가로 간격</small><strong>${fmt(r.gap)} mm</strong></div></div>`:`<div class="metrics"><div class="metric"><small>가로 균등 분할</small><strong>${fmt(r.step)} mm</strong></div></div>`;
 if(mode==='A'&&endsSelected){html+=detail('좌/우 주먹장 가로 길이 (각각)',r.edge,'#16a34a');}
 $('result').innerHTML=html;draw(r);
 }
