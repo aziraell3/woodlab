@@ -4,18 +4,18 @@ const $=id=>document.getElementById(id),val=id=>Number($(id).value),checked=id=>
 const fmt=v=>Number.isFinite(v)?Number(v.toFixed(3)).toLocaleString('ko-KR'):'—';
 const svgNS='http://www.w3.org/2000/svg';
 let mode='A',view='each',previewDismissed=false,showDiagonal=true,showHeight=true,showCenter=true,showJoint=true,showSlope=true,figureFullscreen=false;
-const eduStorageKey='woodlab.jumuckjang.edu-mode.v2';
+const eduStorageKey='woodlab.jumuckjang.edu-mode.v5';
 let eduSyncing=false;
 const defaults=Object.fromEntries(Array.from(document.querySelectorAll('input')).map(el=>[el.id,el.type==='checkbox'?el.checked:el.value]));
 let openInputMenu=()=>{};
-function readEduPref(){try{const v=localStorage.getItem(eduStorageKey);return v===null?true:v==='1';}catch{return true;}}
+function readEduPref(){try{const v=localStorage.getItem(eduStorageKey);return v===null?false:v==='1';}catch{return false;}}
 function writeEduPref(on){try{localStorage.setItem(eduStorageKey,on?'1':'0');}catch{/* ignore */}}
-function setDrawingToggles(on){showDiagonal=on;showHeight=on;showCenter=on;showJoint=on;showSlope=on;}
-function drawingTogglesAllOn(){return showDiagonal&&showHeight&&showCenter&&showJoint&&showSlope;}
+function setDrawingToggles(on){showDiagonal=!!on;showHeight=!!on;showCenter=!!on;showJoint=!!on;showSlope=!!on;}
+function drawingTogglesAllOn(){return !!(showDiagonal&&showHeight&&showCenter&&showJoint&&showSlope);}
 function setEduChecked(on){eduSyncing=true;$('edu-mode').checked=!!on;eduSyncing=false;}
-/* 교육용 ON = 작도 보조 전부 표시, OFF = 전부 숨김. 개별 토글이 하나라도 꺼지면 교육용 해제 */
-function syncEduFromToggles(){const allOn=drawingTogglesAllOn();if($('edu-mode').checked===allOn)return;setEduChecked(allOn);writeEduPref(allOn);}
-function applyEduMode(on){const enabled=!!on;setEduChecked(enabled);setDrawingToggles(enabled);writeEduPref(enabled);}
+/* 체크 UI만 반전: 해제=토글 전부 보임, 선택=전부 숨김. 하나라도 끄면 교육용 선택 */
+function syncEduFromToggles(){const checked=!drawingTogglesAllOn();if($('edu-mode').checked===checked)return;setEduChecked(checked);writeEduPref(checked);}
+function applyEduMode(checked){const on=!!checked;setEduChecked(on);setDrawingToggles(!on);writeEduPref(on);}
 (function initEduMode(){applyEduMode(readEduPref());})();
 function inputMin(el){const min=Number(el.min);return Number.isFinite(min)?min:1;}
 function isCountField(el){return el.id==='ac'||el.id==='bc'||el.id==='cc';}
@@ -135,7 +135,7 @@ const diagonalVisible=showDiagonal&&r.diagonalRequired;
 const lineX=mode==='B'?X+W*r.edge/r.m:X, lineW=mode==='B'?W*centerWidth/r.m:W;
 const rise=Math.min(145,W*Math.sqrt(Math.max(0,r.total*r.total-centerWidth*centerWidth))/r.m),mid=Y+H/2;
 const xp=v=>X+W*v/r.m,xd=v=>lineX+lineW*v/r.total;
-const drawingAngle=showSlope?r.angle:0,tilt=H/2*Math.tan(drawingAngle*Math.PI/180),sgn=checked('reverse')?-1:1,slopeEnds=checked('edge-slope');
+const slopeActive=showSlope&&r.angle>0,drawingAngle=slopeActive?r.angle:0,tilt=H/2*Math.tan(drawingAngle*Math.PI/180),sgn=checked('reverse')?-1:1,slopeEnds=checked('edge-slope');
 const borders=r.cumulative.map((v,i)=>{
 let direction=0;if(i>0&&i<r.cumulative.length-1){if(r.ends&&(i===1||i===r.cumulative.length-2))direction=slopeEnds?(i===1?-1:1):0;else direction=i%2===1?-1:1;}direction*=sgn;
 return {x:xp(v),top:xp(v)+tilt*direction,bottom:xp(v)-tilt*direction,direction};
@@ -152,10 +152,10 @@ shape('rect',{x:X,y:Y,width:W,height:H,fill:'#fb923c','fill-opacity':.13});
 shape('text',{x:X+10,y:extensionTop+30,fill:'#ea580c','font-size':24,'font-weight':700},svg,'부재');
 const fillGroup=shape('g',{'clip-path':'url(#joint-clip)'});
 if(showJoint)r.segments.forEach((s,i)=>{if(s.kind!=='cut'&&s.kind!=='edge')return;const a=borders[i],b=borders[i+1];shape('polygon',{points:`${a.top},${Y} ${b.top},${Y} ${b.bottom},${Y+H} ${a.bottom},${Y+H}`,fill:s.kind==='edge'?'#16a34a':'url(#joint-hatch)','fill-opacity':s.kind==='edge'?.43:1},fillGroup);});
-if(showJoint)borders.slice(1,-1).forEach((p,i)=>{const endEdge=r.ends&&(i===0||i===borders.length-3);shape('line',{x1:p.top,y1:Y,x2:p.bottom,y2:Y+H,stroke:endEdge&&!slopeEnds?'#16a34a':'#9333ea','stroke-width':2.2},fillGroup);});
+if(showJoint||showSlope)borders.slice(1,-1).forEach(p=>{const hasSlope=slopeActive&&Math.abs(p.direction)>1e-9;shape('line',{x1:hasSlope?p.top:p.x,y1:Y,x2:hasSlope?p.bottom:p.x,y2:Y+H,stroke:hasSlope?'#9333ea':'#dc2626','stroke-width':2.2},fillGroup);});
 shape('path',{d:`M${X} ${extensionTop} V${Y+H} M${X+W} ${extensionTop} V${Y+H}`,fill:'none',stroke:'#ea580c','stroke-width':2.4});
-r.segments.forEach((s,i)=>{const a=borders[i],b=borders[i+1];const topDash=!showJoint||s.kind==='keep'||s.kind==='edge',bottomDash=showJoint&&s.kind==='cut';const line=(x1,x2,y,dash)=>{const attrs={x1,y1:y,x2,y2:y,stroke:'#ea580c','stroke-width':dash?1.2:2.4};if(dash)attrs['stroke-dasharray']='5 4';shape('line',attrs);};if(showHeight)line(a.top,b.top,Y,topDash);line(a.bottom,b.bottom,Y+H,bottomDash);});
-if(showJoint&&r.segments.length<=13)r.segments.forEach((s,i)=>{const a=borders[i],b=borders[i+1];shape('text',{x:(a.bottom+b.bottom)/2,y:Y+H+14,fill:s.kind==='edge'?'#16a34a':'#2563eb','font-size':10,'font-weight':700,'text-anchor':'middle'},svg,fmt(s.w));});
+r.segments.forEach((s,i)=>{const a=borders[i],b=borders[i+1];const cutTop=showJoint&&s.kind==='cut';const topDash=!cutTop&&(!showJoint||s.kind==='keep'||s.kind==='edge'),bottomDash=showJoint&&s.kind==='cut';const line=(x1,x2,y,dash)=>{const attrs={x1,y1:y,x2,y2:y,stroke:'#ea580c','stroke-width':dash?1.2:2.4};if(dash)attrs['stroke-dasharray']='5 4';shape('line',attrs);};if(showHeight||cutTop)line(a.top,b.top,Y,topDash);line(a.bottom,b.bottom,Y+H,bottomDash);});
+if((showDiagonal||showJoint)&&r.segments.length<=13)r.segments.forEach((s,i)=>{const a=borders[i],b=borders[i+1];shape('text',{x:(a.x+b.x)/2,y:Y+H+14,fill:s.kind==='edge'?'#16a34a':'#2563eb','font-size':10,'font-weight':700,'text-anchor':'middle'},svg,fmt(s.w));});
 if(showCenter){shape('line',{x1:X,y1:mid,x2:X+W,y2:mid,stroke:'#64748b','stroke-dasharray':'5 4'});shape('text',{x:X+W+7,y:mid+4,fill:'#64748b','font-size':10,'font-weight':700},svg,'중심선');}
 if(diagonalVisible){const diagonalPad=24,diagonalBaseY=Y+H,guideTop=Math.max(extensionTop+58,diagonalBaseY-rise-54),diagonalLength=Math.hypot(lineW,rise)||1,diagonalDx=lineW/diagonalLength,diagonalDy=-rise/diagonalLength,diagonalAngle=Math.atan2(-rise,lineW)*180/Math.PI,diagonalEndX=lineX+lineW+diagonalDx*diagonalPad,diagonalEndY=diagonalBaseY-rise+diagonalDy*diagonalPad;
 shape('line',{x1:lineX-diagonalDx*diagonalPad,y1:diagonalBaseY-diagonalDy*diagonalPad,x2:diagonalEndX,y2:diagonalEndY,stroke:'#2563eb','stroke-width':1});
@@ -163,7 +163,7 @@ r.marks.forEach((v,i)=>{const y=diagonalBaseY-rise*v/r.total;if(i>0&&i<r.marks.l
 if(r.marks.length<=17){if(view==='each')r.marks.slice(0,-1).forEach((v,i)=>{const next=r.marks[i+1],z=(v+next)/2,x=xd(z),y=diagonalBaseY-rise*z/r.total-8;shape('text',{x,y,fill:'#2563eb','font-size':10,'font-weight':650,'text-anchor':'middle',transform:`rotate(${diagonalAngle} ${x} ${y})`},svg,fmt(next-v));});else r.marks.slice(1,-1).forEach(v=>{const x=xd(v),y=diagonalBaseY-rise*v/r.total-8;shape('text',{x,y,fill:'#2563eb','font-size':10,'font-weight':650,'text-anchor':'middle',transform:`rotate(${diagonalAngle} ${x} ${y})`},svg,fmt(v));});}
 }
 let slopeLabelIndex=0;
-if(showSlope)borders.slice(1,-1).forEach(p=>{if(Math.abs(p.direction)<1e-9)return;const x=p.direction>0?p.x+9:p.x-9,y=slopeLabelIndex%2===0?mid-14:mid+20;slopeLabelIndex++;shape('text',{x:Math.max(14,Math.min(406,x)),y,fill:'#9333ea','font-size':11,'font-weight':700,'text-anchor':p.direction>0?'start':'end'},svg,`${fmt(r.angle)}°`);});
+if(slopeActive)borders.slice(1,-1).forEach(p=>{if(Math.abs(p.direction)<1e-9)return;const x=p.direction>0?p.x+9:p.x-9,y=slopeLabelIndex%2===0?mid-14:mid+20;slopeLabelIndex++;shape('text',{x:Math.max(14,Math.min(406,x)),y,fill:'#9333ea','font-size':11,'font-weight':700,'text-anchor':p.direction>0?'start':'end'},svg,`${fmt(r.angle)}°`);});
 if(showHeight){
 shape('line',{x1:X-12,y1:Y,x2:X-12,y2:Y+H,stroke:'#ea580c'});
 shape('line',{x1:X-17,y1:Y,x2:X-7,y2:Y,stroke:'#ea580c'});
@@ -190,27 +190,28 @@ $('edge-slope-wrap').title=ends?'':'좌/우 주먹장이 없는 유형에서는 
 $('drawing-status').textContent=`${mode}형 · ${checked('reverse')?'반전':'기본'} 방향`;
 syncCountSteppers();
 document.querySelectorAll('[data-view]').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.view===view)));
-const diagonalToggle=$('diagonal-toggle');diagonalToggle.disabled=false;diagonalToggle.setAttribute('aria-pressed',String(showDiagonal));diagonalToggle.textContent=showDiagonal?'대각선 숨김':'대각선 보기';
-const heightToggle=$('height-toggle');heightToggle.setAttribute('aria-pressed',String(showHeight));heightToggle.textContent=showHeight?'주먹장 높이 숨김':'주먹장 높이 보기';
-const centerToggle=$('center-toggle');centerToggle.setAttribute('aria-pressed',String(showCenter));centerToggle.textContent=showCenter?'중심선 숨김':'중심선 보기';
-const jointToggle=$('joint-toggle');jointToggle.setAttribute('aria-pressed',String(showJoint));jointToggle.textContent=showJoint?'주먹장 숨김':'주먹장 보기';
-const slopeToggle=$('slope-toggle');slopeToggle.setAttribute('aria-pressed',String(showSlope));slopeToggle.textContent=showSlope?'경사각 숨김':'경사각 보기';
+const diagonalToggle=$('diagonal-toggle');diagonalToggle.disabled=false;diagonalToggle.setAttribute('aria-pressed',String(showDiagonal));diagonalToggle.textContent=showDiagonal?'대각선 보임':'대각선 숨김';
+const heightToggle=$('height-toggle');heightToggle.setAttribute('aria-pressed',String(showHeight));heightToggle.textContent=showHeight?'주먹장 높이 보임':'주먹장 높이 숨김';
+const centerToggle=$('center-toggle');centerToggle.setAttribute('aria-pressed',String(showCenter));centerToggle.textContent=showCenter?'중심선 보임':'중심선 숨김';
+const jointToggle=$('joint-toggle');jointToggle.setAttribute('aria-pressed',String(showJoint));jointToggle.textContent=showJoint?'주먹장 보임':'주먹장 숨김';
+const slopeToggle=$('slope-toggle');slopeToggle.setAttribute('aria-pressed',String(showSlope));slopeToggle.textContent=showSlope?'경사각 보임':'경사각 숨김';
 $('drawing').closest('.workspace-preview').classList.toggle('hidden',previewDismissed);
 $('drawing').closest('.workspace').classList.toggle('preview-dismissed',previewDismissed);
 document.querySelector('.show-preview')?.toggleAttribute('hidden',!previewDismissed);
 if(previewDismissed)return;
 const r=compute();if(r.error){$('result').innerHTML=`<div class="error">${r.error}</div>`;$('drawing').replaceChildren();return;}
-diagonalToggle.disabled=!r.diagonalRequired;diagonalToggle.setAttribute('aria-pressed',String(!!(showDiagonal&&r.diagonalRequired)));diagonalToggle.textContent=r.diagonalRequired?(showDiagonal?'대각선 숨김':'대각선 보기'):'대각선 불필요';
+diagonalToggle.disabled=!r.diagonalRequired;diagonalToggle.setAttribute('aria-pressed',String(!!(showDiagonal&&r.diagonalRequired)));diagonalToggle.textContent=r.diagonalRequired?(showDiagonal?'대각선 보임':'대각선 숨김'):'대각선 불필요';
 let html=r.diagonalRequired?`<div class="metrics"><div class="metric"><small>대각선 총길이</small><strong>${fmt(r.total)} mm</strong></div><div class="metric"><small>${mode==='C'?'대각선 주먹장 길이':'대각선 균등 분할'}</small><strong>${fmt(mode==='C'?r.tooth:r.step)} mm</strong></div></div>`:`<div class="metrics"><div class="metric"><small>가로 균등 분할</small><strong>${fmt(r.step)} mm</strong></div></div>`;
 if(mode==='A'&&endsSelected){html+=detail('좌/우 주먹장 가로 길이 (각각)',r.edge,'#16a34a');}
 $('result').innerHTML=html;draw(r);
 }
 function flipDrawingToggle(key){
 if(key==='diagonal')showDiagonal=!showDiagonal;
-else if(key==='height')showHeight=!showHeight;
+else if(key==='height'){showHeight=!showHeight;if(!showHeight)showJoint=false;}
 else if(key==='center')showCenter=!showCenter;
-else if(key==='joint')showJoint=!showJoint;
+else if(key==='joint'){showJoint=!showJoint;if(showJoint)showHeight=true;}
 else if(key==='slope')showSlope=!showSlope;
+if(showJoint)showHeight=true;
 syncEduFromToggles();
 previewDismissed=false;
 render();
@@ -239,7 +240,7 @@ $('center-toggle').addEventListener('click',()=>flipDrawingToggle('center'));
 $('joint-toggle').addEventListener('click',()=>flipDrawingToggle('joint'));
 $('slope-toggle').addEventListener('click',()=>flipDrawingToggle('slope'));
 $('figure-fullscreen-toggle').addEventListener('click',()=>{figureFullscreen=!figureFullscreen;const figure=$('drawing').closest('.figure'),button=$('figure-fullscreen-toggle');figure.classList.toggle('is-fullscreen',figureFullscreen);document.body.classList.toggle('drawing-fullscreen-active',figureFullscreen);button.setAttribute('aria-pressed',String(figureFullscreen));button.setAttribute('aria-label',figureFullscreen?'작도 전체보기 닫기':'작도 전체보기');button.textContent=figureFullscreen?'×':'⛶';});
-$('reset').addEventListener('click',()=>{for(const [id,v] of Object.entries(defaults)){const el=$(id);if(el.id==='edu-mode')continue;if(el.type==='checkbox')el.checked=v;else el.value=v;}mode='A';view='each';applyEduMode(true);previewDismissed=true;render();document.querySelector('.show-preview')?.removeAttribute('hidden');openInputMenu();});
+$('reset').addEventListener('click',()=>{for(const [id,v] of Object.entries(defaults)){const el=$(id);if(el.id==='edu-mode')continue;if(el.type==='checkbox')el.checked=v;else el.value=v;}mode='A';view='each';applyEduMode(false);previewDismissed=true;render();document.querySelector('.show-preview')?.removeAttribute('hidden');openInputMenu();});
 setupMobilePanels();
 render();
 })();
