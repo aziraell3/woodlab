@@ -150,7 +150,7 @@ return {x:xp(v),top:xp(v)+tilt*direction,bottom:xp(v)-tilt*direction,direction};
 const dimensionBottom=Y+H+(mode==='B'?54:42);
 svg.setAttribute('viewBox',`0 0 420 ${dimensionBottom+28}`);
 const defs=shape('defs'),pat=shape('pattern',{id:'joint-hatch',width:8,height:8,patternUnits:'userSpaceOnUse'},defs);
-shape('rect',{width:8,height:8,fill:'#fee2e2'},pat);shape('path',{d:'M0 8 L8 0 M0 0 L8 8',stroke:'#f8a0a0','stroke-width':0.5},pat);
+shape('rect',{width:8,height:8,fill:'#fee2e2'},pat);shape('path',{d:'M0 8 L8 0 M0 0 L8 8',stroke:'#dc2626','stroke-width':0.5},pat);
 const clip=shape('clipPath',{id:'joint-clip'},defs);shape('rect',{x:X,y:Y,width:W,height:H},clip);
 const extensionTop=24;
 shape('rect',{x:X,y:extensionTop,width:W,height:Y-extensionTop,fill:'#fb923c','fill-opacity':.13});
@@ -158,7 +158,7 @@ shape('rect',{x:X,y:Y,width:W,height:H,fill:'#fb923c','fill-opacity':.13});
 shape('text',{x:X+10,y:extensionTop+30,fill:'#ea580c','font-size':24,'font-weight':700},svg,'부재');
 const fillGroup=shape('g',{'clip-path':'url(#joint-clip)'});
 if(showJoint)r.segments.forEach((s,i)=>{if(s.kind!=='cut'&&s.kind!=='edge')return;const a=borders[i],b=borders[i+1];shape('polygon',{points:`${a.top},${Y} ${b.top},${Y} ${b.bottom},${Y+H} ${a.bottom},${Y+H}`,fill:s.kind==='edge'?'#16a34a':'url(#joint-hatch)','fill-opacity':s.kind==='edge'?.43:1},fillGroup);});
-if(showJoint||showSlope)borders.slice(1,-1).forEach(p=>{const hasSlope=slopeActive&&Math.abs(p.direction)>1e-9;shape('line',{x1:hasSlope?p.top:p.x,y1:Y,x2:hasSlope?p.bottom:p.x,y2:Y+H,stroke:hasSlope?'#9333ea':'#f8a0a0','stroke-width':2.2},fillGroup);});
+if(showJoint||showSlope)borders.slice(1,-1).forEach(p=>{const hasSlope=slopeActive&&Math.abs(p.direction)>1e-9;shape('line',{x1:hasSlope?p.top:p.x,y1:Y,x2:hasSlope?p.bottom:p.x,y2:Y+H,stroke:hasSlope?'#9333ea':'#dc2626','stroke-width':2.2},fillGroup);});
 shape('path',{d:`M${X} ${extensionTop} V${Y+H} M${X+W} ${extensionTop} V${Y+H}`,fill:'none',stroke:'#ea580c','stroke-width':2.4});
 r.segments.forEach((s,i)=>{const a=borders[i],b=borders[i+1];const cutTop=showJoint&&s.kind==='cut';const topDash=!cutTop&&(!showJoint||s.kind==='keep'||s.kind==='edge'),bottomDash=showJoint&&s.kind==='cut';const line=(x1,x2,y,dash)=>{const attrs={x1,y1:y,x2,y2:y,stroke:'#ea580c','stroke-width':dash?1.2:2.4};if(dash)attrs['stroke-dasharray']='5 4';shape('line',attrs);};if(showHeight||cutTop)line(a.top,b.top,Y,topDash);line(a.bottom,b.bottom,Y+H,bottomDash);});
 if((showDiagonal||showJoint)&&r.segments.length<=13)r.segments.forEach((s,i)=>{const a=borders[i],b=borders[i+1];shape('text',{x:(a.x+b.x)/2,y:Y+H+14,fill:s.kind==='edge'?'#16a34a':'#2563eb','font-size':10,'font-weight':700,'text-anchor':'middle'},svg,fmt(s.w));});
@@ -213,11 +213,10 @@ $('result').innerHTML=html;draw(r);
 }
 function flipDrawingToggle(key){
 if(key==='diagonal')showDiagonal=!showDiagonal;
-else if(key==='height'){showHeight=!showHeight;if(!showHeight)showJoint=false;}
-else if(key==='center')showCenter=!showCenter;
+else if(key==='height')showHeight=!showHeight;
+else if(key==='center'){showCenter=!showCenter;if(showCenter)showHeight=true;}
 else if(key==='joint'){showJoint=!showJoint;if(showJoint)showHeight=true;}
 else if(key==='slope')showSlope=!showSlope;
-if(showJoint)showHeight=true;
 syncEduFromToggles();
 previewDismissed=false;
 render();
