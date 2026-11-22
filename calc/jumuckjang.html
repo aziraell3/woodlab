@@ -12,14 +12,18 @@
 </head>
 <body>
 <main class="app">
+<div class="app-title-row">
 <h1>주먹장 계산기</h1>
+<label class="check edu-check"><input type="checkbox" id="edu-mode" checked>교육용</label>
+</div>
+<p class="app-intro">본 계산기는 주먹장 설계 이해를 돕기 위한 화면입니다. 결과에만 의존하지 말고, 익숙해질 때까지 반복·실습하시길 권장합니다.</p>
 <div class="workspace">
 <section class="panel workspace-preview" aria-label="계산 결과 및 작도">
 <div class="kicker">계산된 값</div><div id="result" aria-live="polite"></div>
 <div class="drawing-title"><strong>주먹장 작도 미리보기</strong><span id="drawing-status" class="muted">A형 · 기본 방향</span></div>
 <div class="toggles"><button type="button" data-view="each" aria-pressed="true">각 구간 표시</button><button type="button" data-view="cumulative" aria-pressed="false">누적 치수 표시</button></div>
-<div class="drawing-actions"><button type="button" id="diagonal-toggle" aria-pressed="false">대각선 숨기기</button><button type="button" id="center-toggle" aria-pressed="false">중심선 숨기기</button><button type="button" id="joint-toggle" aria-pressed="false">주먹장 숨기기</button><button type="button" id="slope-toggle" aria-pressed="false">경사각 숨기기</button></div>
-<div class="figure"><button type="button" class="figure-fullscreen-toggle" id="figure-fullscreen-toggle" aria-label="작도 전체보기" aria-pressed="false">⛶</button><svg id="drawing" viewBox="0 0 420 360" role="img" aria-label="주먹장 대각선 길이, 분할점, 제거 영역 작도"></svg><div class="legend"><span><i class="swatch" style="background:#ea580c"></i>부재</span><span><i class="swatch" style="background:#2563eb"></i>대각선</span><span><i class="swatch" style="background:#9333ea"></i>경사각</span><span><i class="swatch" style="background:#16a34a"></i>좌우 주먹장</span><span><i class="swatch" style="background:#dc2626"></i>제거</span></div></div>
+<div class="drawing-actions"><button type="button" id="diagonal-toggle" aria-pressed="false">대각선 숨김</button><button type="button" id="height-toggle" aria-pressed="false">주먹장 높이 숨김</button><button type="button" id="center-toggle" aria-pressed="false">중심선 숨김</button><button type="button" id="joint-toggle" aria-pressed="false">주먹장 숨김</button><button type="button" id="slope-toggle" aria-pressed="false">경사각 숨김</button></div>
+<div class="figure"><button type="button" class="figure-fullscreen-toggle" id="figure-fullscreen-toggle" aria-label="작도 전체보기" aria-pressed="false">⛶</button><svg id="drawing" viewBox="0 0 420 360" role="img" aria-label="주먹장 대각선 길이, 분할점, 제거 영역 작도"></svg><div class="legend"><span><i class="swatch" style="background:#ea580c"></i>부재</span><span><i class="swatch" style="background:#2563eb"></i>대각선</span><span><i class="swatch" style="background:#9333ea"></i>경사각</span><span><i class="swatch" style="background:#16a34a"></i>좌/우 주먹장</span><span><i class="swatch" style="background:#dc2626"></i>제거</span></div></div>
 <div class="footer hidden"><button type="button" class="reset" id="reset">전체 초기화</button></div>
 </section>
 <div class="workspace-inputs">
@@ -35,15 +39,18 @@
 <div class="tabs" role="tablist" aria-label="유형 선택"><button type="button" role="tab" data-mode="A" aria-selected="true">A형</button><button type="button" role="tab" data-mode="B" aria-selected="false">B형</button><button type="button" role="tab" data-mode="C" aria-selected="false">C형</button></div>
 <div class="subtitle" id="type-title">A형 · 균등 분할</div>
 <div id="a-panel" class="options" role="tabpanel">
-<div class="grid2"><div class="field blue"><label for="ac">주먹장의 개수 (개)</label><input type="number" id="ac" value="5" min="1" max="20" step="1"></div><div class="field blue"><label for="aw">주먹장의 가로 길이 (mm)</label><input type="number" id="aw" value="20" min="0.001" step="any" disabled></div></div>
-<label class="check hidden"><input type="checkbox" id="a-ends" disabled>좌우 주먹장 길이 별도 지정</label><div class="field green hidden" id="a-edge-wrap"><label for="a-edge">좌우 주먹장 각각의 길이 (mm)</label><input type="number" id="a-edge" value="10" min="0.001" step="any" disabled></div>
+<div class="field blue"><label for="ac">주먹장의 개수 (홀수)</label><div class="count-stepper"><button type="button" class="count-step" data-count="ac" data-dir="1" aria-label="개수 증가">+</button><input type="number" id="ac" value="5" min="1" max="19" step="2" inputmode="numeric"><button type="button" class="count-step" data-count="ac" data-dir="-1" aria-label="개수 감소">−</button></div></div>
+<div class="field blue"><label for="aw">주먹장의 길이 (mm)</label><input type="number" id="aw" value="20" min="0.001" step="any" disabled></div>
+<label class="check hidden"><input type="checkbox" id="a-ends" disabled>좌/우 주먹장 길이 별도 지정</label><div class="field green hidden" id="a-edge-wrap"><label for="a-edge">좌/우 주먹장 각각의 길이 (mm)</label><input type="number" id="a-edge" value="10" min="0.001" step="any" disabled></div>
 </div>
 <div id="b-panel" class="options hidden" role="tabpanel">
-<div class="grid2"><div class="field blue"><label for="bc">주먹장의 개수 (개)</label><input type="number" id="bc" value="5" min="1" max="20" step="1"></div><div class="field blue"><label for="bt">주먹장의 길이 (mm)</label><input type="number" id="bt" value="15" min="0.001" step="any" disabled></div></div>
-<div class="edge-slope-row"><div class="field green"><label for="b-edge">좌우 주먹장 길이 (mm)</label><input type="number" id="b-edge" value="10" min="0.001" step="any"></div><label class="check slope-check" id="edge-slope-wrap"><input type="checkbox" id="edge-slope" checked>좌/우 경사각 적용</label></div>
+<div class="field blue"><label for="bc">주먹장의 개수 (홀수)</label><div class="count-stepper"><button type="button" class="count-step" data-count="bc" data-dir="1" aria-label="개수 증가">+</button><input type="number" id="bc" value="5" min="3" max="19" step="2" inputmode="numeric"><button type="button" class="count-step" data-count="bc" data-dir="-1" aria-label="개수 감소">−</button></div></div>
+<div class="field blue"><label for="bt">주먹장의 길이 (mm)</label><input type="number" id="bt" value="15" min="0.001" step="any" disabled></div>
+<div class="edge-slope-row"><div class="field green"><label for="b-edge">좌/우 주먹장 길이 (mm)</label><input type="number" id="b-edge" value="10" min="0.001" step="any"></div><label class="check slope-check" id="edge-slope-wrap"><input type="checkbox" id="edge-slope" checked>좌/우 경사각 적용</label></div>
 </div>
 <div id="c-panel" class="options hidden" role="tabpanel">
-<div class="grid2"><div class="field blue"><label for="cc">주먹장의 개수 (개)</label><input type="number" id="cc" value="3" min="2" max="20" step="1"></div><div class="field blue"><label for="ct">주먹장의 가로 길이 (mm)</label><input type="number" id="ct" value="15" min="0.001" step="any"></div></div>
+<div class="field blue"><label for="cc">주먹장의 개수 (홀수)</label><div class="count-stepper"><button type="button" class="count-step" data-count="cc" data-dir="1" aria-label="개수 증가">+</button><input type="number" id="cc" value="3" min="3" max="19" step="2" inputmode="numeric"><button type="button" class="count-step" data-count="cc" data-dir="-1" aria-label="개수 감소">−</button></div></div>
+<div class="field blue"><label for="ct">주먹장의 길이 (mm)</label><input type="number" id="ct" value="15" min="0.001" step="any"></div>
 </div>
 
 </section>
@@ -54,6 +61,6 @@
   <div>© 2026 김태중. All rights reserved. 무단 복제 및 배포를 금지합니다.</div>
 </footer>
 </main>
-<script src="../js/jumuckjang.js"></script>
+<script src="../js/jumuckjang.js?v=inputs-collapsed-1"></script>
 </body>
 </html>
